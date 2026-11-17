@@ -1,32 +1,35 @@
-# React + TypeScript + Vite
+# DGTL$Cash Money (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Financial-literacy app for K-5 children: count virtual bills and coins to an exact amount, buy items from a virtual store, race other players, and count real family expenses.
 
-Currently, two official plugins are available:
+## Run it
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # production build in dist/
+```
+Requires Node 18+.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
-
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+## Structure
+```
+src/
+  main.jsx            entry
+  App.jsx             screen router + bottom nav
+  store.jsx           app state (React context), saved to localStorage
+  api.js              BACK-END LAYER: swap these functions for your server
+  data.js             currencies, store items, opponents, helpers (integer-cent math)
+  styles.css
+  components/Globe.jsx   canvas globe (drag, tap a dot)
+  screens/               Login, Home, Store, Currencies, Compete, Game, Family
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Going to production
+`src/api.js` currently uses localStorage and BroadcastChannel (so two browser tabs can race each other). Replace:
+- `saveProfile`, `topBoard`, `getExpenses`, `addExpense`, `getChild` with `fetch()` calls to your API
+- `joinRoom` with a WebSocket connection (same callbacks: onPeers, onStart, onWon)
+- the demo login in `Login.jsx` with real auth, and add parental consent (COPPA) before collecting any child data
+
+## Rules the code follows
+- All money is integer minor units (cents), never floats.
+- A count is correct only when the tray total equals the target exactly.
+- Overlays use `z-index:100` so they sit above the in-hand bill fan.
